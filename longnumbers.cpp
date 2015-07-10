@@ -21,6 +21,12 @@ public:
         return *this;
     }
 
+    BigInteger operator++(int) {
+        BigInteger copy(*this);
+        ++copy;
+        return copy;
+    }
+
     BigInteger operator+(const BigInteger& o) {
         BigInteger res;
         res.digits.resize(std::max(this->digits.size(), o.digits.size()));
@@ -31,7 +37,20 @@ public:
         return res;
     }
 
-    bool operator==(const BigInteger& o) {
+    BigInteger operator*(const BigInteger& o) {
+        BigInteger res;
+        res.digits.resize(this->digits.size() + o.digits.size(), 0);
+        for (int i = 0; i < this->digits.size(); ++i) {
+            for (int j = 0; j < o.digits.size(); ++j) {
+                res.digits[i + j] += this->digits[i] * o.digits[j];
+            }
+        }
+        res.HandleCarry();
+        res.RemoveLeadingZeroes();
+        return res;
+    }
+
+    bool operator==(const BigInteger& o) const{
         if (o.digits.size() != this->digits.size())
             return false;
         for (int i = 0; i < this->digits.size(); ++i) {
@@ -39,6 +58,37 @@ public:
                 return false;
         }
         return true;
+    }
+
+    bool operator!=(const BigInteger& o) const {
+        return !(*this == o);
+    }
+
+    bool operator<(const BigInteger& o) const {
+        if (this->digits.size() < o.digits.size())
+            return true;
+        if (this->digits.size() > o.digits.size())
+            return false;
+
+        for (int i = this->digits.size() - 1; i >= 0; --i) {
+            if (this->digits[i] < o.digits[i])
+                return true;
+            if (this->digits[i] > o.digits[i])
+                return false;
+        }
+        return false;
+    }
+
+    bool operator<=(const BigInteger& o) const{
+        return *this < o || *this == o;
+    }
+
+    bool operator>(const BigInteger& o) const{
+        return o < *this;
+    }
+
+    bool operator>=(const BigInteger& o) const{
+        return o <= *this;
     }
 
     friend std::ostream& operator<<(std::ostream& out, const BigInteger& num);
@@ -53,6 +103,11 @@ private:
                 digits[i + 1] += carry;
             }
         }
+    }
+
+    void RemoveLeadingZeroes() {
+        while (this->digits.size() > 1 && this->digits[this->digits.size() - 1] == 0)
+            this->digits.pop_back();
     }
 
     int GetDigit(int idx) const {
@@ -84,4 +139,11 @@ int main()
     std::cout << z << std::endl;
     BigInteger a = z + x + y;
     std::cout << a << std::endl;
+    std::cout << (z == 42) << std::endl;
+    std::cout << "NON-EQ test" << std::endl;
+    std::cout << (z != 42) << std::endl;
+    std::cout << "NON-EQ test ended" << std::endl;
+    std::cout << (z < 42) << std::endl;
+    std::cout << "TEST" << std::endl;
+    std::cout << (z + z + 1 < z + z + 2) << std::endl;
 }
