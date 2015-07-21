@@ -27,6 +27,32 @@ public:
         return copy;
     }
 
+    BigInteger operator/(const BigInteger& o) {
+        BigInteger res;
+        BigInteger reminder(*this);
+        int power = reminder.digits.size() - o.digits.size();
+        if (power <= 0) {
+            return 0;
+        }
+        res.digits.resize(power + 1, 0);
+        while (reminder > o) {
+            for (int d = 1; d <= 10; ++d) {
+                BigInteger temp;
+                temp.digits.resize(power,  0);
+                temp.digits.push_back(d);
+                if (temp * o > reminder) {
+                    res.digits[power] = d - 1;
+                    temp.digits[power] = d - 1;
+                    reminder = reminder - temp * o;
+                    power--;
+                    break;
+                }
+            }
+        }
+        res.RemoveLeadingZeroes();
+        return res;
+    }
+
     BigInteger operator+(const BigInteger& o) {
         BigInteger res;
         res.digits.resize(std::max(this->digits.size(), o.digits.size()));
@@ -34,6 +60,17 @@ public:
             res.digits[i] = this->GetDigit(i) + o.GetDigit(i);
         }
         res.HandleCarry();
+        return res;
+    }
+
+    BigInteger operator-(const BigInteger& o) {
+        BigInteger res;
+        res.digits.resize(std::max(this->digits.size(), o.digits.size()));
+        for (int i = 0; i < res.digits.size(); ++i) {
+            res.digits[i] = this->GetDigit(i) - o.GetDigit(i);
+        }
+        res.HandleNegativeCarry();
+        res.RemoveLeadingZeroes();
         return res;
     }
 
@@ -105,6 +142,16 @@ private:
         }
     }
 
+    void HandleNegativeCarry() {
+        // TODO: this function doesn't work for negative numbers
+        for (int i = 0; i < digits.size(); ++i) {
+            if (digits[i] < 0) {
+                digits[i] += 10;
+                digits[i + 1]--;
+            }
+        }
+    }
+
     void RemoveLeadingZeroes() {
         while (this->digits.size() > 1 && this->digits[this->digits.size() - 1] == 0)
             this->digits.pop_back();
@@ -146,4 +193,10 @@ int main()
     std::cout << (z < 42) << std::endl;
     std::cout << "TEST" << std::endl;
     std::cout << (z + z + 1 < z + z + 2) << std::endl;
+    std::cout << "SUBTRACTION TEST" << std::endl;
+    BigInteger q = 1700;
+    std::cout << q - 18 << std::endl;
+    std::cout << "DIVISION TEST" << std::endl;
+    BigInteger d = 1280;
+    std::cout << d / 14 << std::endl;
 }
