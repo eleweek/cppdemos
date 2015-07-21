@@ -55,9 +55,9 @@ public:
 
     BigInteger operator+(const BigInteger& o) {
         BigInteger res;
-        res.digits.resize(std::max(this->digits.size(), o.digits.size()));
+        res.digits.resize(std::max(digits.size(), o.digits.size()));
         for (int i = 0; i < res.digits.size(); ++i) {
-            res.digits[i] = this->GetDigit(i) + o.GetDigit(i);
+            res.digits[i] = GetDigit(i) + o.GetDigit(i);
         }
         res.HandleCarry();
         return res;
@@ -65,9 +65,9 @@ public:
 
     BigInteger operator-(const BigInteger& o) {
         BigInteger res;
-        res.digits.resize(std::max(this->digits.size(), o.digits.size()));
+        res.digits.resize(std::max(digits.size(), o.digits.size()));
         for (int i = 0; i < res.digits.size(); ++i) {
-            res.digits[i] = this->GetDigit(i) - o.GetDigit(i);
+            res.digits[i] = GetDigit(i) - o.GetDigit(i);
         }
         res.HandleNegativeCarry();
         res.RemoveLeadingZeroes();
@@ -76,10 +76,10 @@ public:
 
     BigInteger operator*(const BigInteger& o) {
         BigInteger res;
-        res.digits.resize(this->digits.size() + o.digits.size(), 0);
-        for (int i = 0; i < this->digits.size(); ++i) {
+        res.digits.resize(digits.size() + o.digits.size(), 0);
+        for (int i = 0; i < digits.size(); ++i) {
             for (int j = 0; j < o.digits.size(); ++j) {
-                res.digits[i + j] += this->digits[i] * o.digits[j];
+                res.digits[i + j] += digits[i] * o.digits[j];
             }
         }
         res.HandleCarry();
@@ -88,10 +88,10 @@ public:
     }
 
     bool operator==(const BigInteger& o) const{
-        if (o.digits.size() != this->digits.size())
+        if (o.digits.size() != digits.size())
             return false;
-        for (int i = 0; i < this->digits.size(); ++i) {
-            if (o.digits[i] != this->digits[i])
+        for (int i = 0; i < digits.size(); ++i) {
+            if (o.digits[i] != digits[i])
                 return false;
         }
         return true;
@@ -102,15 +102,15 @@ public:
     }
 
     bool operator<(const BigInteger& o) const {
-        if (this->digits.size() < o.digits.size())
+        if (digits.size() < o.digits.size())
             return true;
-        if (this->digits.size() > o.digits.size())
+        if (digits.size() > o.digits.size())
             return false;
 
-        for (int i = this->digits.size() - 1; i >= 0; --i) {
-            if (this->digits[i] < o.digits[i])
+        for (int i = digits.size() - 1; i >= 0; --i) {
+            if (digits[i] < o.digits[i])
                 return true;
-            if (this->digits[i] > o.digits[i])
+            if (digits[i] > o.digits[i])
                 return false;
         }
         return false;
@@ -153,8 +153,8 @@ private:
     }
 
     void RemoveLeadingZeroes() {
-        while (this->digits.size() > 1 && this->digits[this->digits.size() - 1] == 0)
-            this->digits.pop_back();
+        while (digits.size() > 1 && digits[digits.size() - 1] == 0)
+            digits.pop_back();
     }
 
     int GetDigit(int idx) const {
